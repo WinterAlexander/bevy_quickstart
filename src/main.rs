@@ -9,6 +9,7 @@ mod ui;
 
 use crate::debug_camera_controller::DebugCameraControllerPlugin;
 use crate::example2d::example2d::Example2DPlugin;
+use crate::example2d::topdowncameracontroller::TopDownCameraControllerPlugin;
 use crate::mesh_loader::MeshLoaderPlugin;
 use crate::object_spawner::ObjectSpawnerPlugin;
 use crate::scene_loader::SceneLoaderPlugin;
@@ -24,7 +25,9 @@ use bevy::DefaultPlugins;
 use std::env;
 
 fn make_2d(app: &mut App) {
-    app.add_plugins(Example2DPlugin);
+    app.add_plugins(DefaultPlugins)
+        .add_plugins(Example2DPlugin)
+        .add_plugins(TopDownCameraControllerPlugin);
 }
 
 fn make_3d(app: &mut App) {

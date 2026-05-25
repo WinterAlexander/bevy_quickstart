@@ -84,8 +84,8 @@ impl CameraControllerState {
 }
 
 fn process_inputs(
-    mut mouse_motion_events: EventReader<MouseMotion>,
-    mut keyboard_input_events: EventReader<KeyboardInput>,
+    mut mouse_motion_events: MessageReader<MouseMotion>,
+    mut keyboard_input_events: MessageReader<KeyboardInput>,
     mut state: ResMut<CameraControllerState>,
 ) {
     for event in mouse_motion_events.read() {
