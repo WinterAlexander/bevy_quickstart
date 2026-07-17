@@ -1,10 +1,21 @@
 use bevy::app::{App, Plugin, Update};
 use bevy::camera::Camera;
-use bevy::input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll};
+use bevy::input::mouse::AccumulatedMouseScroll;
 use bevy::input::ButtonInput;
-use bevy::prelude::{GlobalTransform, MouseButton, Query, Res, Transform};
+use bevy::math::{Vec2, Vec3Swizzles};
+use bevy::prelude::{
+    GlobalTransform, MouseButton, Res, ResMut, Resource, Single, Transform, Window, With,
+};
+use bevy::window::PrimaryWindow;
 
 pub struct TopDownCameraControllerPlugin;
+
+#[derive(Resource, Default)]
+pub struct MouseDragState {
+    pub dragged: bool,
+    pub start_drag_position: Vec2,
+    pub start_cam_position: Vec2,
+}
 
 const DRAG_BUTTON: MouseButton = MouseButton::Left;
 const MOUSE_SENSITIVITY: f32 = 1.0;
@@ -12,24 +23,51 @@ const SCROLL_SENSITIVITY: f32 = 0.01;
 
 impl Plugin for TopDownCameraControllerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, update_camera);
+        app.add_systems(Update, (update_camera, update_drag_state));
+        app.insert_resource(MouseDragState::default());
+    }
+}
+
+fn update_drag_state(
+    camera_transform: Single<&Transform, With<Camera>>,
+    mouse_buttons: Res<ButtonInput<MouseButton>>,
+    window: Single<&Window, With<PrimaryWindow>>,
+    mut drag_state: ResMut<MouseDragState>,
+) {
+    let pressed = mouse_buttons.pressed(DRAG_BUTTON);
+    if pressed == drag_state.dragged {
+        return;
+    }
+
+    drag_state.dragged = pressed;
+    if pressed {
+        drag_state.start_drag_position = window.cursor_position().unwrap();
+        drag_state.start_cam_position = camera_transform.translation.xy();
     }
 }
 
 fn update_camera(
-    mut camera_transform_query: Query<(&Camera, &GlobalTransform, &mut Transform)>,
-    mouse_motion: Res<AccumulatedMouseMotion>,
+    mut camera_transform_query: Single<(&Camera, &GlobalTransform, &mut Transform)>,
+    window: Single<&Window, With<PrimaryWindow>>,
+    drag_state: Res<MouseDragState>,
     mouse_scroll: Res<AccumulatedMouseScroll>,
-    mouse_button_input: Res<ButtonInput<MouseButton>>,
 ) {
-    let (camera, gt, mut transform) = camera_transform_query.single_mut().unwrap();
-    if mouse_button_input.pressed(DRAG_BUTTON) {
-        let position = camera.world_to_viewport(gt, transform.translation).unwrap();
-        let world_pos = camera
-            .viewport_to_world_2d(gt, position - mouse_motion.delta * MOUSE_SENSITIVITY)
-            .unwrap();
-        transform.translation = world_pos.extend(0.0);
+    let (camera, gt, transform) = &mut *camera_transform_query;
+    transform.scale -= mouse_scroll.delta.y * SCROLL_SENSITIVITY;
+
+    if !drag_state.dragged {
+        return;
     }
 
-    transform.scale += mouse_scroll.delta.y * SCROLL_SENSITIVITY;
+    let Some(current_mouse) = window.cursor_position() else {
+        return;
+    };
+
+    let start_drag_world = camera
+        .viewport_to_world_2d(gt, drag_state.start_drag_position)
+        .unwrap();
+    let current_mouse_world = camera.viewport_to_world_2d(gt, current_mouse).unwrap();
+
+    transform.translation =
+        (drag_state.start_cam_position + start_drag_world - current_mouse_world).extend(0.0);
 }
