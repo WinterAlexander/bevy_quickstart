@@ -17,8 +17,7 @@ pub struct MouseDragState {
     pub start_cam_position: Vec2,
 }
 
-const DRAG_BUTTON: MouseButton = MouseButton::Left;
-const MOUSE_SENSITIVITY: f32 = 1.0;
+const DRAG_BUTTON: MouseButton = MouseButton::Right;
 const SCROLL_SENSITIVITY: f32 = 0.01;
 
 impl Plugin for TopDownCameraControllerPlugin {
