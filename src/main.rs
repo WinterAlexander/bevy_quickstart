@@ -15,13 +15,13 @@ use crate::object_spawner::ObjectSpawnerPlugin;
 use crate::scene_loader::SceneLoaderPlugin;
 use crate::title_screen::{GameState, TitleScreenPlugin};
 use crate::ui::interactive_button::InteractiveButtonPlugin;
+use bevy::DefaultPlugins;
 use bevy::app::{App, PluginGroup};
 use bevy::asset::AssetMetaCheck;
 use bevy::image::{ImageAddressMode, ImageFilterMode, ImageSamplerDescriptor};
 use bevy::prelude::*;
 use bevy::render::render_resource::{AddressMode, FilterMode};
 use bevy::window::{CursorGrabMode, CursorOptions};
-use bevy::DefaultPlugins;
 use std::env;
 
 fn make_2d(app: &mut App) {

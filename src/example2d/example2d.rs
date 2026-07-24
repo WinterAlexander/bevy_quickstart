@@ -4,7 +4,7 @@ use bevy::camera::{Camera, Camera2d, ClearColor, OrthographicProjection, Project
 use bevy::color::Color;
 use bevy::mesh::{Mesh, Mesh2d};
 use bevy::prelude::{
-    default, ColorMaterial, Commands, MeshMaterial2d, Rectangle, Res, ResMut, Transform,
+    ColorMaterial, Commands, MeshMaterial2d, Rectangle, Res, ResMut, Transform, default,
 };
 use bevy::sprite::Text2d;
 use bevy::text::{TextColor, TextFont};
