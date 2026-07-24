@@ -1,4 +1,5 @@
 mod debug_camera_controller;
+mod example2d;
 mod mesh_loader;
 mod object_spawner;
 mod particle;
@@ -7,6 +8,8 @@ mod title_screen;
 mod ui;
 
 use crate::debug_camera_controller::DebugCameraControllerPlugin;
+use crate::example2d::example2d::Example2DPlugin;
+use crate::example2d::topdowncameracontroller::TopDownCameraControllerPlugin;
 use crate::mesh_loader::MeshLoaderPlugin;
 use crate::object_spawner::ObjectSpawnerPlugin;
 use crate::scene_loader::SceneLoaderPlugin;
@@ -19,10 +22,15 @@ use bevy::image::{ImageAddressMode, ImageFilterMode, ImageSamplerDescriptor};
 use bevy::prelude::*;
 use bevy::render::render_resource::{AddressMode, FilterMode};
 use bevy::window::{CursorGrabMode, CursorOptions};
+use std::env;
 
-fn main() {
-    let mut app = App::new();
+fn make_2d(app: &mut App) {
+    app.add_plugins(DefaultPlugins)
+        .add_plugins(Example2DPlugin)
+        .add_plugins(TopDownCameraControllerPlugin);
+}
 
+fn make_3d(app: &mut App) {
     let default_sampler = ImageSamplerDescriptor {
         address_mode_u: ImageAddressMode::from(AddressMode::Repeat),
         address_mode_v: ImageAddressMode::from(AddressMode::Repeat),
@@ -67,6 +75,18 @@ fn main() {
     app.add_plugins(DebugCameraControllerPlugin);
     app.add_plugins(ObjectSpawnerPlugin);
     app.insert_state(GameState::TitleScreen);
+}
+
+fn main() {
+    let mut app = App::new();
+
+    let args: Vec<String> = env::args().collect();
+
+    if args.contains(&String::from("2d")) {
+        make_2d(&mut app);
+    } else {
+        make_3d(&mut app);
+    }
 
     app.run();
 }
