@@ -25,10 +25,10 @@ fn object_spawner(
 
     if input.just_pressed(KeyCode::Numpad1) || input.just_pressed(KeyCode::Digit1) {
         spawn_fly(asset_server, mesh_loader);
-        return;
     } else if input.just_pressed(KeyCode::Numpad2) || input.just_pressed(KeyCode::Digit2) {
         spawn_shrimp(asset_server, mesh_loader);
-        return;
+    } else if input.just_pressed(KeyCode::Numpad3) || input.just_pressed(KeyCode::Digit3) {
+        spawn_table(asset_server, mesh_loader);
     }
 }
 
@@ -47,6 +47,18 @@ fn spawn_fly(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<Mesh
 fn spawn_shrimp(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<MeshLoader>) {
     load_gltf(
         String::from("pistol_shrimp.glb"),
+        GLTFLoadConfig {
+            entity_initializer: add_object_tag,
+            ..default()
+        },
+        &mut asset_server,
+        &mut mesh_loader,
+    );
+}
+
+fn spawn_table(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<MeshLoader>) {
+    load_gltf(
+        String::from("table_set.glb"),
         GLTFLoadConfig {
             entity_initializer: add_object_tag,
             ..default()
