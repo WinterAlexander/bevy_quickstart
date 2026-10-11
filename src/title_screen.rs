@@ -59,9 +59,9 @@ fn on_enter(mut commands: Commands, asset_server: Res<AssetServer>) {
                         justify_content: JustifyContent::Center,
                         // vertically center child text
                         align_items: AlignItems::Center,
+                        border_radius: BorderRadius::all(Val::Percent(50.0)),
                         ..default()
                     },
-                    BorderRadius::all(Val::Percent(50.0)),
                     InteractiveButton::default(),
                     BackgroundColor::from(Color::srgba(0.2, 0.2, 0.2, 1.0)),
                 ))
@@ -69,8 +69,8 @@ fn on_enter(mut commands: Commands, asset_server: Res<AssetServer>) {
                     parent.spawn((
                         Text::new("Start Game"),
                         TextFont {
-                            font: asset_server.load("font.ttf"),
-                            font_size: 40.0,
+                            font: FontSource::Handle(asset_server.load("font.ttf")),
+                            font_size: FontSize::Px(40.0),
                             ..default()
                         },
                         TextColor(Color::srgba(0.9, 0.9, 0.9, 1.0)),
@@ -81,12 +81,12 @@ fn on_enter(mut commands: Commands, asset_server: Res<AssetServer>) {
             parent.spawn((
                 Text::new("Made in Rust!"),
                 TextFont {
-                    font: asset_server.load("font.ttf"),
-                    font_size: 48.0,
+                    font: FontSource::Handle(asset_server.load("font.ttf")),
+                    font_size: FontSize::Px(48.0),
                     ..default()
                 },
                 TextColor(Color::srgba(0.9, 0.9, 0.9, 1.0)),
-                TextLayout::new_with_justify(Justify::Center),
+                TextLayout::justify(Justify::Center),
                 Node {
                     position_type: PositionType::Absolute,
                     bottom: Val::Px(5.0),

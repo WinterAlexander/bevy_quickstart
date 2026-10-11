@@ -1,14 +1,10 @@
-use bevy::ecs::schedule::ScheduleLabel;
-use bevy::platform::collections::HashSet;
+use avian3d::prelude::Collider;
+use bevy::gltf::GltfMaterial;
 use bevy::{
     gltf::{Gltf, GltfMesh, GltfNode},
     mesh::{Indices, VertexAttributeValues},
     prelude::*,
 };
-use bevy_rapier3d::plugin::PhysicsSet;
-use bevy_rapier3d::prelude::{Collider, CollisionGroups};
-use std::marker::PhantomData;
-use std::ops::Mul;
 
 pub struct MeshLoaderPlugin;
 
@@ -24,8 +20,6 @@ pub struct GLTFLoadConfig {
     pub entity_initializer: fn(&mut EntityCommands),
     /// Whether to generate a (static, non rigid body) collider for the loaded GLTF during load
     pub generate_static_collider: bool,
-    /// CollisionGroups to use for the generated collider
-    pub collision_groups: CollisionGroups,
 }
 
 impl Default for GLTFLoadConfig {
@@ -34,7 +28,6 @@ impl Default for GLTFLoadConfig {
             spawn: true,
             entity_initializer: |commands| {},
             generate_static_collider: false,
-            collision_groups: CollisionGroups::default(),
         }
     }
 }
@@ -104,9 +97,7 @@ fn process_loaded_gltfs(
                 ) {
                     match get_collider_from_mesh(mesh, &transform) {
                         Ok(collider) => {
-                            commands
-                                .spawn(collider)
-                                .insert(loaded_gltf.config.collision_groups);
+                            commands.spawn(collider);
                         }
                         Err(err) => {
                             error!("{err:?}");
@@ -119,7 +110,7 @@ fn process_loaded_gltfs(
         }
 
         if loaded_gltf.config.spawn {
-            let mut entity_commands = commands.spawn(SceneRoot(first_scene_handle));
+            let mut entity_commands = commands.spawn(WorldAssetRoot(first_scene_handle));
             let func = loaded_gltf.config.entity_initializer;
             func(&mut entity_commands);
         }
@@ -145,7 +136,7 @@ fn get_material_from_gltf_node<'a>(
     node_handle: &Handle<GltfNode>,
     gltf_meshes: &Res<Assets<GltfMesh>>,
     nodes: &Res<Assets<GltfNode>>,
-) -> Option<Handle<StandardMaterial>> {
+) -> Option<Handle<GltfMaterial>> {
     nodes
         .get(node_handle)
         .and_then(|node| node.mesh.as_ref())
@@ -208,10 +199,5 @@ fn get_collider_from_mesh(
         })
         .collect();
 
-    let collider = Collider::trimesh(vertices, triple_indices);
-
-    if collider.is_ok() {
-        return Ok(collider.unwrap());
-    }
-    Err(ColliderFromMeshError::TrimeshBuilderFailure())
+    Ok(Collider::trimesh(vertices, triple_indices))
 }

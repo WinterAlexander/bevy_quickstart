@@ -62,7 +62,7 @@ pub fn particle_remove(
     for (entity, mut particle) in query.iter_mut() {
         particle.lifetime.tick(time.delta());
 
-        if particle.lifetime.finished() {
+        if particle.lifetime.is_finished() {
             commands.get_entity(entity).unwrap().despawn();
         }
     }

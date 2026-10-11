@@ -4,7 +4,7 @@ use bevy::camera::{Camera, Camera2d, ClearColor, OrthographicProjection, Project
 use bevy::color::Color;
 use bevy::mesh::{Mesh, Mesh2d};
 use bevy::prelude::{
-    ColorMaterial, Commands, MeshMaterial2d, Rectangle, Res, ResMut, Transform, default,
+    ColorMaterial, Commands, FontSize, MeshMaterial2d, Rectangle, Res, ResMut, Transform, default,
 };
 use bevy::sprite::Text2d;
 use bevy::text::{TextColor, TextFont};
@@ -45,7 +45,7 @@ fn spawn_text(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("composite.ttf");
     let text_font = TextFont {
         font: font.clone().into(),
-        font_size: 50.0,
+        font_size: FontSize::Px(50.0),
         ..default()
     };
 
