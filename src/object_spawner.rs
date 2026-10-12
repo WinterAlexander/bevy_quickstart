@@ -1,5 +1,6 @@
 use crate::mesh_loader::{GLTFLoadConfig, MeshLoader, load_gltf};
 use crate::scene_loader::SceneElement;
+use avian3d::prelude::{Collider, MassPropertiesBundle, RigidBody};
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::AssetServer;
 use bevy::input::ButtonInput;
@@ -37,6 +38,7 @@ fn spawn_fly(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<Mesh
         String::from("fruit_fly.glb"),
         GLTFLoadConfig {
             entity_initializer: add_object_tag,
+            collider_body: Some(RigidBody::Dynamic),
             ..default()
         },
         &mut asset_server,
@@ -49,6 +51,7 @@ fn spawn_shrimp(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<M
         String::from("pistol_shrimp.glb"),
         GLTFLoadConfig {
             entity_initializer: add_object_tag,
+            collider_body: Some(RigidBody::Dynamic),
             ..default()
         },
         &mut asset_server,
@@ -61,6 +64,7 @@ fn spawn_table(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<Me
         String::from("table_set.glb"),
         GLTFLoadConfig {
             entity_initializer: add_object_tag,
+            collider_body: None,
             ..default()
         },
         &mut asset_server,
@@ -69,11 +73,13 @@ fn spawn_table(mut asset_server: ResMut<AssetServer>, mut mesh_loader: ResMut<Me
 }
 
 fn add_object_tag(commands: &mut EntityCommands) {
-    commands.insert(SceneElement).insert(Transform::from_xyz(
-        rand::random::<f32>() * 100.0 - 50.0,
-        10.0,
-        rand::random::<f32>() * 100.0 - 50.0,
-    ));
-    //.insert(RigidBodyBuilder::new(RigidBodyType::Dynamic).build())
-    //.insert(ColliderBuilder::cuboid(1.0, 1.0, 1.0).build());
+    commands
+        .insert(SceneElement)
+        .insert(Transform::from_xyz(
+            rand::random::<f32>() * 100.0 - 50.0,
+            10.0,
+            rand::random::<f32>() * 100.0 - 50.0,
+        ))
+        .insert(RigidBody::Dynamic)
+        .insert(Collider::cuboid(1.0, 1.0, 1.0));
 }

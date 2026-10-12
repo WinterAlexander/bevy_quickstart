@@ -1,5 +1,6 @@
 use crate::mesh_loader::{self, GLTFLoadConfig, MeshLoader, load_gltf};
 use avian3d::PhysicsPlugins;
+use avian3d::prelude::RigidBody;
 use bevy::anti_alias::taa::{TemporalAntiAliasPlugin, TemporalAntiAliasing};
 use bevy::camera::Hdr;
 use bevy::core_pipeline::Skybox;
@@ -148,7 +149,7 @@ fn setup_basic(
         GLTFLoadConfig {
             spawn: true,
             entity_initializer: add_scene_tag,
-            generate_static_collider: true,
+            collider_body: Some(RigidBody::Static),
         },
         &mut asset_server,
         &mut mesh_loader,
@@ -245,7 +246,7 @@ fn setup_kirby(
         GLTFLoadConfig {
             spawn: true,
             entity_initializer: add_scene_tag,
-            generate_static_collider: true,
+            collider_body: Some(RigidBody::Static),
         },
         &mut asset_server,
         &mut mesh_loader,
@@ -264,7 +265,7 @@ fn asset_loaded(
         // so they appear as one texture. The following code reconfigures the texture as necessary.
         if image.texture_descriptor.array_layer_count() == 1 {
             let layer_count = image.height() / image.width();
-            image.reinterpret_stacked_2d_as_array(layer_count);
+            let _ = image.reinterpret_stacked_2d_as_array(layer_count);
             image.texture_view_descriptor = Some(TextureViewDescriptor {
                 dimension: Some(TextureViewDimension::Cube),
                 ..default()

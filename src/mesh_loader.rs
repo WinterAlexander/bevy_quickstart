@@ -1,4 +1,4 @@
-use avian3d::prelude::Collider;
+use avian3d::prelude::{Collider, RigidBody};
 use bevy::gltf::GltfMaterial;
 use bevy::{
     gltf::{Gltf, GltfMesh, GltfNode},
@@ -18,8 +18,8 @@ pub struct GLTFLoadConfig {
     pub spawn: bool,
     /// initializes the entity that was spawned (allows adding bundle, components or do whatever)
     pub entity_initializer: fn(&mut EntityCommands),
-    /// Whether to generate a (static, non rigid body) collider for the loaded GLTF during load
-    pub generate_static_collider: bool,
+    /// Some to generate a collider for the loaded GLTF during load, or None for no collider
+    pub collider_body: Option<RigidBody>,
 }
 
 impl Default for GLTFLoadConfig {
@@ -27,7 +27,7 @@ impl Default for GLTFLoadConfig {
         Self {
             spawn: true,
             entity_initializer: |commands| {},
-            generate_static_collider: false,
+            collider_body: None,
         }
     }
 }
@@ -88,7 +88,7 @@ fn process_loaded_gltfs(
         for (name, node_handle) in &gltf.named_nodes {
             println!("{}", name);
 
-            if loaded_gltf.config.generate_static_collider {
+            if let Some(body) = loaded_gltf.config.collider_body {
                 info!("Generating collider from level object: {name:?}");
                 if let (Some(mesh), Some(material_handle), Some(transform)) = (
                     get_mesh_from_gltf_node(node_handle, &meshes, &gltf_meshes, &nodes),
@@ -97,7 +97,7 @@ fn process_loaded_gltfs(
                 ) {
                     match get_collider_from_mesh(mesh, &transform) {
                         Ok(collider) => {
-                            commands.spawn(collider);
+                            commands.spawn((body, collider));
                         }
                         Err(err) => {
                             error!("{err:?}");
