@@ -1,5 +1,6 @@
 use crate::ui::interactive_button::InteractiveButton;
 use bevy::prelude::*;
+use bevy::window::{CursorGrabMode, CursorOptions};
 
 pub struct TitleScreenPlugin;
 
@@ -32,7 +33,13 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2d::default());
 }
 
-fn on_enter(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn on_enter(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut cursor_options: Single<&mut CursorOptions>,
+) {
+    cursor_options.visible = true;
+    cursor_options.grab_mode = CursorGrabMode::None;
     commands
         .spawn((
             TitleScreenUI,
@@ -150,7 +157,13 @@ fn start_game_click_handler(
     }
 }
 
-fn clean(mut commands: Commands, query: Query<Entity, With<TitleScreenUI>>) {
+fn clean(
+    mut commands: Commands,
+    query: Query<Entity, With<TitleScreenUI>>,
+    mut cursor_options: Single<&mut CursorOptions>,
+) {
+    cursor_options.visible = false;
+    cursor_options.grab_mode = CursorGrabMode::Confined;
     for ui_element in query.iter() {
         commands.entity(ui_element).despawn();
     }
