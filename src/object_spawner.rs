@@ -31,21 +31,21 @@ fn object_spawner(
     }
 }
 
-fn spawn_fly(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
+fn spawn_fly(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     add_object_tag(&mut commands.spawn((
         WorldAssetRoot(asset_server.load("fruit_fly.glb#Scene0")),
         ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
     )));
 }
 
-fn spawn_shrimp(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
+fn spawn_shrimp(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     add_object_tag(&mut commands.spawn((
         WorldAssetRoot(asset_server.load("pistol_shrimp.glb#Scene0")),
         ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
     )));
 }
 
-fn spawn_table(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
+fn spawn_table(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     add_object_tag(&mut commands.spawn((
         WorldAssetRoot(asset_server.load("table_set.glb#Scene0")),
         ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),

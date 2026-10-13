@@ -33,7 +33,7 @@ impl Plugin for SceneLoaderPlugin {
 
         app.add_systems(Update, asset_loaded);
         app.add_systems(Update, scene_switcher);
-        app.add_plugins((PhysicsPlugins::default(), PhysicsDebugPlugin))
+        app.add_plugins(PhysicsPlugins::default())
             .insert_resource(ClearColor(Color::srgb(0.3, 0.6, 0.9)))
             .insert_resource(DirectionalLightShadowMap { size: 4096 });
     }
@@ -231,7 +231,7 @@ fn setup_kirby(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
     commands.spawn((
         WorldAssetRoot(asset_server.load("test_scene2.glb#Scene0")),
         RigidBody::Static,
-        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
+        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexDecompositionFromMesh),
     ));
 }
 

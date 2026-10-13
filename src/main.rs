@@ -1,3 +1,4 @@
+pub mod debug;
 mod debug_camera_controller;
 mod example2d;
 mod object_spawner;
@@ -6,6 +7,7 @@ mod scene_loader;
 mod title_screen;
 mod ui;
 
+use crate::debug::DebugPlugin;
 use crate::debug_camera_controller::DebugCameraControllerPlugin;
 use crate::example2d::example2d::Example2DPlugin;
 use crate::example2d::topdowncameracontroller::TopDownCameraControllerPlugin;
@@ -71,6 +73,7 @@ fn make_3d(app: &mut App) {
     app.add_plugins(TitleScreenPlugin);
     app.add_plugins(DebugCameraControllerPlugin);
     app.add_plugins(ObjectSpawnerPlugin);
+    app.add_plugins(DebugPlugin);
     app.insert_state(GameState::TitleScreen);
 }
 
