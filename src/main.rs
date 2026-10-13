@@ -3,18 +3,22 @@ mod debug_camera_controller;
 mod example2d;
 mod object_spawner;
 mod particle;
+pub mod pause;
 mod scene_loader;
 mod title_screen;
 mod ui;
+mod window_management;
 
 use crate::debug::DebugPlugin;
 use crate::debug_camera_controller::DebugCameraControllerPlugin;
 use crate::example2d::example2d::Example2DPlugin;
 use crate::example2d::topdowncameracontroller::TopDownCameraControllerPlugin;
 use crate::object_spawner::ObjectSpawnerPlugin;
+use crate::pause::PausePlugin;
 use crate::scene_loader::SceneLoaderPlugin;
 use crate::title_screen::{GameState, TitleScreenPlugin};
 use crate::ui::interactive_button::InteractiveButtonPlugin;
+use crate::window_management::WindowManagementPlugin;
 use bevy::DefaultPlugins;
 use bevy::app::{App, PluginGroup};
 use bevy::asset::AssetMetaCheck;
@@ -73,7 +77,7 @@ fn make_3d(app: &mut App) {
     app.add_plugins(TitleScreenPlugin);
     app.add_plugins(DebugCameraControllerPlugin);
     app.add_plugins(ObjectSpawnerPlugin);
-    app.add_plugins(DebugPlugin);
+    app.add_plugins((DebugPlugin, WindowManagementPlugin, PausePlugin));
     app.insert_state(GameState::TitleScreen);
 }
 

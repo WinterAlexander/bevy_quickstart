@@ -15,6 +15,7 @@ pub enum GameState {
     #[default]
     TitleScreen,
     Game,
+    Paused,
 }
 
 impl Plugin for TitleScreenPlugin {
@@ -33,13 +34,7 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2d::default());
 }
 
-fn on_enter(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut cursor_options: Single<&mut CursorOptions>,
-) {
-    cursor_options.visible = true;
-    cursor_options.grab_mode = CursorGrabMode::None;
+fn on_enter(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
             TitleScreenUI,
@@ -157,13 +152,7 @@ fn start_game_click_handler(
     }
 }
 
-fn clean(
-    mut commands: Commands,
-    query: Query<Entity, With<TitleScreenUI>>,
-    mut cursor_options: Single<&mut CursorOptions>,
-) {
-    cursor_options.visible = false;
-    cursor_options.grab_mode = CursorGrabMode::Confined;
+fn clean(mut commands: Commands, query: Query<Entity, With<TitleScreenUI>>) {
     for ui_element in query.iter() {
         commands.entity(ui_element).despawn();
     }
