@@ -143,7 +143,7 @@ fn setup_basic(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
     commands.spawn((
         WorldAssetRoot(asset_server.load("test_scene.glb#Scene0")),
         RigidBody::Static,
-        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexDecompositionFromMesh),
+        ColliderConstructorHierarchy::new(ColliderConstructor::TrimeshFromMesh),
     ));
 }
 

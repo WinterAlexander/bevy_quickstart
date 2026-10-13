@@ -3,7 +3,10 @@ use avian3d::prelude::{ColliderConstructor, ColliderConstructorHierarchy, RigidB
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::AssetServer;
 use bevy::input::ButtonInput;
-use bevy::prelude::{Commands, EntityCommands, KeyCode, Res, ResMut, Transform, WorldAssetRoot};
+use bevy::prelude::{
+    Children, Commands, KeyCode, On, Query, Res, ResMut, Transform, WorldAssetRoot,
+};
+use bevy::world_serialization::WorldInstanceReady;
 
 pub struct ObjectSpawnerPlugin;
 
@@ -32,33 +35,43 @@ fn object_spawner(
 }
 
 fn spawn_fly(mut commands: Commands, asset_server: ResMut<AssetServer>) {
-    add_object_tag(&mut commands.spawn((
+    let _ = &mut commands.spawn((
         WorldAssetRoot(asset_server.load("fruit_fly.glb#Scene0")),
         ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
-    )));
-}
-
-fn spawn_shrimp(mut commands: Commands, asset_server: ResMut<AssetServer>) {
-    add_object_tag(&mut commands.spawn((
-        WorldAssetRoot(asset_server.load("pistol_shrimp.glb#Scene0")),
-        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
-    )));
-}
-
-fn spawn_table(mut commands: Commands, asset_server: ResMut<AssetServer>) {
-    add_object_tag(&mut commands.spawn((
-        WorldAssetRoot(asset_server.load("table_set.glb#Scene0")),
-        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
-    )));
-}
-
-fn add_object_tag(commands: &mut EntityCommands) {
-    commands
-        .insert(SceneElement)
-        .insert(Transform::from_xyz(
+        SceneElement,
+        Transform::from_xyz(
             rand::random::<f32>() * 100.0 - 50.0,
             10.0,
             rand::random::<f32>() * 100.0 - 50.0,
-        ))
-        .insert(RigidBody::Dynamic);
+        ),
+        RigidBody::Dynamic,
+    ));
+}
+
+fn spawn_shrimp(mut commands: Commands, asset_server: ResMut<AssetServer>) {
+    let _ = &mut commands.spawn((
+        WorldAssetRoot(asset_server.load("pistol_shrimp.glb#Scene0")),
+        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
+        SceneElement,
+        Transform::from_xyz(
+            rand::random::<f32>() * 100.0 - 50.0,
+            10.0,
+            rand::random::<f32>() * 100.0 - 50.0,
+        ),
+        RigidBody::Dynamic,
+    ));
+}
+
+fn spawn_table(mut commands: Commands, asset_server: ResMut<AssetServer>) {
+    let _ = &mut commands.spawn((
+        WorldAssetRoot(asset_server.load("table_set.glb#Scene0")),
+        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
+        RigidBody::Dynamic,
+        SceneElement,
+        Transform::from_xyz(
+            rand::random::<f32>() * 100.0 - 50.0,
+            10.0,
+            rand::random::<f32>() * 100.0 - 50.0,
+        ),
+    ));
 }
