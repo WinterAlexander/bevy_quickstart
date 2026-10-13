@@ -1,6 +1,7 @@
-use crate::mesh_loader::{self, GLTFLoadConfig, MeshLoader, load_gltf};
 use avian3d::PhysicsPlugins;
-use avian3d::prelude::RigidBody;
+use avian3d::prelude::{
+    ColliderConstructor, ColliderConstructorHierarchy, PhysicsDebugPlugin, RigidBody,
+};
 use bevy::anti_alias::taa::{TemporalAntiAliasPlugin, TemporalAntiAliasing};
 use bevy::camera::Hdr;
 use bevy::core_pipeline::Skybox;
@@ -28,11 +29,11 @@ pub struct SceneElement;
 
 impl Plugin for SceneLoaderPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_basic.after(mesh_loader::setup));
+        app.add_systems(Startup, setup_basic);
 
         app.add_systems(Update, asset_loaded);
         app.add_systems(Update, scene_switcher);
-        app.add_plugins(PhysicsPlugins::default())
+        app.add_plugins((PhysicsPlugins::default(), PhysicsDebugPlugin))
             .insert_resource(ClearColor(Color::srgb(0.3, 0.6, 0.9)))
             .insert_resource(DirectionalLightShadowMap { size: 4096 });
     }
@@ -43,7 +44,6 @@ fn scene_switcher(
     mut scene_elements: Query<(Entity, &SceneElement)>,
     mut commands: Commands,
     asset_server: ResMut<AssetServer>,
-    mesh_loader: ResMut<MeshLoader>,
 ) {
     if !input.pressed(KeyCode::ControlLeft) && !input.pressed(KeyCode::ControlRight) {
         return;
@@ -53,23 +53,19 @@ fn scene_switcher(
         for (entity, _) in scene_elements.iter_mut() {
             commands.entity(entity).despawn();
         }
-        setup_basic(commands, asset_server, mesh_loader);
+        setup_basic(commands, asset_server);
         return;
     } else if input.just_pressed(KeyCode::Numpad2) || input.just_pressed(KeyCode::Digit2) {
         for (entity, _) in scene_elements.iter_mut() {
             commands.entity(entity).despawn();
         }
-        setup_kirby(commands, asset_server, mesh_loader);
+        setup_kirby(commands, asset_server);
         return;
     }
 }
 
 /// set up a simple 3D scene
-fn setup_basic(
-    mut commands: Commands,
-    mut asset_server: ResMut<AssetServer>,
-    mut mesh_loader: ResMut<MeshLoader>,
-) {
+fn setup_basic(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
     commands.spawn((
         SceneElement,
         AudioPlayer::new(asset_server.load("test_song.ogg")),
@@ -144,27 +140,18 @@ fn setup_basic(
         Bloom::default(),
     ));
 
-    load_gltf(
-        String::from("test_scene.glb"),
-        GLTFLoadConfig {
-            spawn: true,
-            entity_initializer: add_scene_tag,
-            collider_body: Some(RigidBody::Static),
-        },
-        &mut asset_server,
-        &mut mesh_loader,
-    );
+    commands.spawn((
+        WorldAssetRoot(asset_server.load("test_scene.glb#Scene0")),
+        RigidBody::Static,
+        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexDecompositionFromMesh),
+    ));
 }
 
 fn add_scene_tag(commands: &mut EntityCommands) {
     commands.insert(SceneElement);
 }
 
-fn setup_kirby(
-    mut commands: Commands,
-    mut asset_server: ResMut<AssetServer>,
-    mut mesh_loader: ResMut<MeshLoader>,
-) {
+fn setup_kirby(mut commands: Commands, mut asset_server: ResMut<AssetServer>) {
     commands.spawn((
         SceneElement,
         AudioPlayer::new(asset_server.load("test_song.ogg")),
@@ -241,16 +228,11 @@ fn setup_kirby(
         TemporalJitter::default(),
     ));
 
-    load_gltf(
-        String::from("test_scene2.glb"),
-        GLTFLoadConfig {
-            spawn: true,
-            entity_initializer: add_scene_tag,
-            collider_body: Some(RigidBody::Static),
-        },
-        &mut asset_server,
-        &mut mesh_loader,
-    );
+    commands.spawn((
+        WorldAssetRoot(asset_server.load("test_scene2.glb#Scene0")),
+        RigidBody::Static,
+        ColliderConstructorHierarchy::new(ColliderConstructor::ConvexHullFromMesh),
+    ));
 }
 
 fn asset_loaded(

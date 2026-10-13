@@ -1,6 +1,5 @@
 mod debug_camera_controller;
 mod example2d;
-mod mesh_loader;
 mod object_spawner;
 mod particle;
 mod scene_loader;
@@ -10,7 +9,6 @@ mod ui;
 use crate::debug_camera_controller::DebugCameraControllerPlugin;
 use crate::example2d::example2d::Example2DPlugin;
 use crate::example2d::topdowncameracontroller::TopDownCameraControllerPlugin;
-use crate::mesh_loader::MeshLoaderPlugin;
 use crate::object_spawner::ObjectSpawnerPlugin;
 use crate::scene_loader::SceneLoaderPlugin;
 use crate::title_screen::{GameState, TitleScreenPlugin};
@@ -69,7 +67,6 @@ fn make_3d(app: &mut App) {
             }),
     );
     app.add_plugins(InteractiveButtonPlugin);
-    app.add_plugins(MeshLoaderPlugin);
     app.add_plugins(SceneLoaderPlugin);
     app.add_plugins(TitleScreenPlugin);
     app.add_plugins(DebugCameraControllerPlugin);
