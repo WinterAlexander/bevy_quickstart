@@ -1,5 +1,6 @@
 use crate::ui::interactive_button::InteractiveButton;
 use bevy::prelude::*;
+use bevy::window::{CursorGrabMode, CursorOptions};
 
 pub struct TitleScreenPlugin;
 
@@ -14,6 +15,7 @@ pub enum GameState {
     #[default]
     TitleScreen,
     Game,
+    Paused,
 }
 
 impl Plugin for TitleScreenPlugin {

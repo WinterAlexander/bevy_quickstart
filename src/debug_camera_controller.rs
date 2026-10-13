@@ -11,9 +11,11 @@ impl Plugin for DebugCameraControllerPlugin {
         app.add_systems(Update, (process_inputs, update_state, set_camera));
         app.add_systems(
             OnEnter(GameState::Game),
-            |mut c: ResMut<CameraControllerState>| {
-                c.enabled = true;
-            },
+            |mut c: ResMut<CameraControllerState>| c.enabled = true,
+        );
+        app.add_systems(
+            OnExit(GameState::Game),
+            |mut c: ResMut<CameraControllerState>| c.enabled = false,
         );
         app.insert_resource(CameraControllerState::new());
     }
