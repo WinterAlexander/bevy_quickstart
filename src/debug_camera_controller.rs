@@ -17,7 +17,7 @@ impl Plugin for DebugCameraControllerPlugin {
             OnExit(GameState::Game),
             |mut c: ResMut<CameraControllerState>| c.enabled = false,
         );
-        app.insert_resource(CameraControllerState::new());
+        app.insert_resource(CameraControllerState::default());
     }
 }
 
@@ -62,8 +62,8 @@ struct CameraControllerState {
     enabled: bool,
 }
 
-impl CameraControllerState {
-    fn new() -> Self {
+impl Default for CameraControllerState {
+    fn default() -> Self {
         Self {
             unprocessed_delta: None,
 
@@ -136,7 +136,7 @@ fn update_state(mut state: ResMut<CameraControllerState>, time: Res<Time>) {
         state.view_direction.horizontal += -unprocessed_delta.0 * mouse_sensitivity;
         state.view_direction.vertical = (state.view_direction.vertical
             + (-unprocessed_delta.1 * mouse_sensitivity))
-            .clamp((-90.0 as f32).to_radians(), (90.0 as f32).to_radians());
+            .clamp((-90.0f32).to_radians(), (90.0f32).to_radians());
     }
     state.unprocessed_delta = None;
 
