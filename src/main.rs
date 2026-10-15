@@ -79,7 +79,7 @@ fn make_3d(app: &mut App) {
     app.add_plugins(InteractiveButtonPlugin);
     app.add_plugins(SceneLoaderPlugin);
     app.add_plugins(TitleScreenPlugin);
-    app.add_plugins(ThirdPersonCameraPlugin);
+    app.add_plugins((ThirdPersonCameraPlugin, DebugCameraControllerPlugin));
     app.add_plugins((ObjectSpawnerPlugin, CharacterPlugin));
     app.add_plugins((DebugPlugin, WindowManagementPlugin, PausePlugin));
     app.insert_state(GameState::TitleScreen);

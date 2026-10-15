@@ -2,11 +2,9 @@ use crate::title_screen::GameState;
 use avian3d::parry::glamx::{EulerRot, Quat, Vec3};
 use bevy::app::{App, Plugin, Update};
 use bevy::camera::Camera3d;
-use bevy::input::keyboard::KeyboardInput;
-use bevy::input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll, MouseMotion};
+use bevy::input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll};
 use bevy::prelude::{
-    Component, MessageReader, OnEnter, OnExit, Query, Res, ResMut, Resource, Single, Time,
-    Transform, With, Without,
+    Component, OnEnter, OnExit, Query, Res, ResMut, Resource, Single, Transform, With, Without,
 };
 
 pub struct ThirdPersonCameraPlugin;
@@ -16,13 +14,13 @@ impl Plugin for ThirdPersonCameraPlugin {
         app.add_systems(Update, (update_state, set_camera));
         app.add_systems(
             OnEnter(GameState::Game),
-            |mut c: ResMut<CameraControllerState>| c.enabled = true,
+            |mut c: ResMut<ThirdPersonCameraControllerState>| c.enabled = true,
         );
         app.add_systems(
             OnExit(GameState::Game),
-            |mut c: ResMut<CameraControllerState>| c.enabled = false,
+            |mut c: ResMut<ThirdPersonCameraControllerState>| c.enabled = false,
         );
-        app.insert_resource(CameraControllerState::default());
+        app.insert_resource(ThirdPersonCameraControllerState::default());
     }
 }
 
@@ -30,17 +28,17 @@ impl Plugin for ThirdPersonCameraPlugin {
 pub struct CameraTarget;
 
 #[derive(Resource)]
-struct CameraControllerState {
+pub struct ThirdPersonCameraControllerState {
     pitch: f32,
     yaw: f32,
     distance: f32,
 
-    enabled: bool,
+    pub enabled: bool,
 }
 
-impl Default for CameraControllerState {
+impl Default for ThirdPersonCameraControllerState {
     fn default() -> Self {
-        CameraControllerState {
+        ThirdPersonCameraControllerState {
             pitch: -45.0f32,
             yaw: 0.0,
             distance: 7.0,
@@ -49,7 +47,7 @@ impl Default for CameraControllerState {
     }
 }
 
-impl CameraControllerState {
+impl ThirdPersonCameraControllerState {
     fn to_quat(&self) -> Quat {
         Quat::from_euler(EulerRot::XYZ, 0.0, self.yaw, 0.0)
             * Quat::from_euler(EulerRot::XYZ, self.pitch, 0.0, 0.0)
@@ -66,7 +64,7 @@ impl CameraControllerState {
 }
 
 fn update_state(
-    mut state: ResMut<CameraControllerState>,
+    mut state: ResMut<ThirdPersonCameraControllerState>,
     mouse_motion: Res<AccumulatedMouseMotion>,
     scroll: Res<AccumulatedMouseScroll>,
 ) {
@@ -80,13 +78,13 @@ fn update_state(
     state.pitch = (state.pitch + (-mouse_motion.delta.y * mouse_sensitivity))
         .clamp((-90.0f32).to_radians(), 90.0f32.to_radians());
 
-    state.distance += scroll.delta.y;
+    state.distance -= scroll.delta.y;
 }
 
 fn set_camera(
     camera_target_query: Single<&Transform, (With<CameraTarget>, Without<Camera3d>)>,
     mut camera_transform_query: Query<&mut Transform, With<Camera3d>>,
-    state: Res<CameraControllerState>,
+    state: Res<ThirdPersonCameraControllerState>,
 ) {
     let mut camera_transform = camera_transform_query.single_mut().unwrap();
 

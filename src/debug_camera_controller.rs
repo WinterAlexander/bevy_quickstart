@@ -11,13 +11,13 @@ impl Plugin for DebugCameraControllerPlugin {
         app.add_systems(Update, (process_inputs, update_state, set_camera));
         app.add_systems(
             OnEnter(GameState::Game),
-            |mut c: ResMut<CameraControllerState>| c.enabled = true,
+            |mut c: ResMut<DebugCameraControllerState>| c.enabled = false,
         );
         app.add_systems(
             OnExit(GameState::Game),
-            |mut c: ResMut<CameraControllerState>| c.enabled = false,
+            |mut c: ResMut<DebugCameraControllerState>| c.enabled = false,
         );
-        app.insert_resource(CameraControllerState::default());
+        app.insert_resource(DebugCameraControllerState::default());
     }
 }
 
@@ -45,7 +45,7 @@ impl ControlledViewDirection {
 }
 
 #[derive(Resource)]
-struct CameraControllerState {
+pub struct DebugCameraControllerState {
     unprocessed_delta: Option<(f32, f32)>,
 
     is_forward_pressed: bool,
@@ -59,10 +59,10 @@ struct CameraControllerState {
     position: Vec3,
     speed: f32,
 
-    enabled: bool,
+    pub enabled: bool,
 }
 
-impl Default for CameraControllerState {
+impl Default for DebugCameraControllerState {
     fn default() -> Self {
         Self {
             unprocessed_delta: None,
@@ -88,7 +88,7 @@ impl Default for CameraControllerState {
 fn process_inputs(
     mut mouse_motion_events: MessageReader<MouseMotion>,
     mut keyboard_input_events: MessageReader<KeyboardInput>,
-    mut state: ResMut<CameraControllerState>,
+    mut state: ResMut<DebugCameraControllerState>,
 ) {
     for event in mouse_motion_events.read() {
         state.unprocessed_delta = match state.unprocessed_delta {
@@ -99,9 +99,6 @@ fn process_inputs(
 
     for event in keyboard_input_events.read() {
         match event.key_code {
-            KeyCode::F5 => {
-                state.enabled = true;
-            }
             KeyCode::KeyW => {
                 state.is_forward_pressed = event.state.is_pressed();
             }
@@ -125,7 +122,7 @@ fn process_inputs(
     }
 }
 
-fn update_state(mut state: ResMut<CameraControllerState>, time: Res<Time>) {
+fn update_state(mut state: ResMut<DebugCameraControllerState>, time: Res<Time>) {
     if !state.enabled {
         return;
     }
@@ -183,7 +180,7 @@ fn update_state(mut state: ResMut<CameraControllerState>, time: Res<Time>) {
 
 fn set_camera(
     mut camera_transform_query: Query<&mut Transform, With<Camera3d>>,
-    mut state: ResMut<CameraControllerState>,
+    mut state: ResMut<DebugCameraControllerState>,
 ) {
     let mut camera_transform = camera_transform_query.single_mut().unwrap();
 
