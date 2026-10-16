@@ -52,15 +52,18 @@ fn object_spawner(
                     rand::random::<f32>() * 100.0 - 50.0,
                 ),
                 RigidBody::Dynamic,
-                AnimationGraphHandle(graph),
             ))
             .observe(
                 move |ready: On<WorldInstanceReady>,
+                      mut commands: Commands,
                       children: Query<&Children>,
                       mut players: Query<&mut AnimationPlayer>| {
                     for child in children.iter_descendants(ready.entity) {
                         if let Ok(mut player) = players.get_mut(child) {
                             player.play(node).repeat();
+                            commands
+                                .entity(child)
+                                .insert(AnimationGraphHandle(graph.clone()));
                         }
                     }
                 },
